@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- ================== HEAD ================== -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PD-SENSE Doctor Portal - Real-time Parkinson's monitoring dashboard">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+  <title>PD-SENSE Doctor Portal</title>
+
+  <!-- Modern Enterprise Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+
+  <!-- ================== MODERN ENTERPRISE CSS ================== -->
+  <style>
+    :root {
+      /* Deep Enterprise Theme */
+      --sidebar-bg: #0F172A;
+      /* Slate 900 */
+      --sidebar-hover: #1E293B;
+      /* Slate 800 */
+      --sidebar-text: #94A3B8;
+      /* Slate 400 */
+      --sidebar-active-text: #F8FAFC;
+      /* Slate 50 */
+
+      --bg-main: #F1F5F9;
+      /* Slate 100 */
+      --bg-card: #FFFFFF;
+
+      --text-main: #0F172A;
+      /* Slate 900 */
+      --text-muted: #475569;
+      /* Slate 600 */
+      --text-light: #64748B;
+      /* Slate 500 */
+
+      --accent: #2563EB;
+      /* Blue 600 */
+      --accent-hover: #1D4ED8;
+      /* Blue 700 */
+      --accent-light: #EFF6FF;
+      /* Blue 50 */
+
+      --border: #E2E8F0;
+      /* Slate 200 */
+
+      /* Status Colors */
+      --success: #10B981;
+      --success-bg: #ECFDF5;
+      --warning: #F59E0B;
+      --warning-bg: #FFFBEB;
+      --danger: #EF4444;
+      --danger-bg: #FEF2F2;
+      --info: #8B5CF6;
+      --info-bg: #F5F3FF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: 600;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* --- Enterprise Login View --- */
+    #view-login {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .login-box {
+      background: #FFFFFF;
+      padding: 3.5rem 3rem;
+      border-radius: 16px;
+      width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-box-logo {
+      width: 64px;
+      height: 64px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.5rem;
+    }
+
+    .login-box h2 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .login-box p {
+      color: var(--text-light);
+      margin-bottom: 2.5rem;
+      font-size: 1rem;
+    }
+
+    .login-box input[type="email"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      color: var(--text-main);
+    }
+
+    .login-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .login-box button[type="submit"] {
+      width: 100%;
+      padding: 0.85rem;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    .login-box button[type="submit"]:hover {
+      background: var(--accent-hover);
+    }
+
+    .login-box button[type="submit"]:active {
+      transform: translateY(1px);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      justify-content: flex-start;
+    }
+
+    #login-error {
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-top: 1.25rem;
+      min-height: 1.2rem;
+      font-weight: 500;
+    }
+
+    /* --- App Layout (Dark Sidebar) --- */
+    #view-app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+      z-index: 20;
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .sidebar h2 {
+      font-size: 1.25rem;
+      color: white;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .sidebar nav {
+      padding: 1.5rem 1rem;
+      flex: 1;
+    }
+
+    .sidebar nav a {
+      color: var(--sidebar-text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+      gap: 0.75rem;
+    }
+
+    .sidebar nav a:hover {
+      background: var(--sidebar-hover);
+      color: var(--sidebar-active-text);
+    }
+
+    .sidebar nav a.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    .sidebar-bottom {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-bottom #doctor-email {
+      margin-bottom: 1rem;
+      font-weight: 500;
+      color: var(--sidebar-active-text);
+      font-size: 0.85rem;
+    }
+
+    .sidebar button {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #FCA5A5;
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+      width: 100%;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .sidebar button:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .topbar {
+      background: #FFFFFF;
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-light);
+    }
+
+    .dot.live {
+      background: var(--success);
+      box-shadow: 0 0 0 3px var(--success-bg);
+    }
+
+    .page-container {
+      padding: 2rem 3rem 4rem;
+      overflow-y: auto;
+      flex: 1;
+      display: none;
+    }
+
+    .page-container.active {
+      display: block;
+      animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- Modern SaaS Cards --- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+
+    .card.clickable {
+      cursor: pointer;
+    }
+
+    .card.clickable:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    .card.clickable:hover::before {
+      background: var(--accent);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-top: 0.5rem;
+    }
+
+    .card-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    /* --- Status Badges --- */
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-outline {
+      background: transparent;
+      border: 1px solid currentColor;
+    }
+
+    .bg-grey {
+      background: var(--bg-main);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .bg-green {
+      background: var(--success-bg);
+      color: #047857;
+      border: 1px solid #A7F3D0;
+    }
+
+    .bg-amber {
+      background: var(--warning-bg);
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+
+    .bg-orange {
+      background: #FFF7ED;
+      color: #C2410C;
+      border: 1px solid #FFEDD5;
+    }
+
+    .bg-red {
+      background: var(--danger-bg);
+      color: #B91C1C;
+      border: 1px solid #FECACA;
+    }
+
+    .bg-purple {
+      background: var(--info-bg);
+      color: #6D28D9;
+      border: 1px solid #DDD6FE;
+    }
+
+    /* --- Enterprise Tables --- */
+    .table-container {
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 1.15rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 600;
+      background: #F8FAFC;
+    }
+
+    td {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    tr {
+      transition: background 0.15s;
+    }
+
+    tr:hover td {
+      background: #F8FAFC;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr.critical td {
+      background: var(--danger-bg);
+      color: #991B1B;
+    }
+
+    tr.warning td {
+      background: var(--warning-bg);
+      color: #92400E;
+    }
+
+    /* --- Charts --- */
+    .chart-container {
+      background: var(--bg-card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-header h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: var(--text-main);
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    /* --- Alert Panels (AI Insights) --- */
+    .alert-panel {
+      padding: 1.25rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.95rem;
+      border-left: 4px solid transparent;
+    }
+
+    .alert-purple {
+      background: var(--info-bg);
+      color: #5B21B6;
+      border-left-color: var(--info);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .alert-amber {
+      background: var(--warning-bg);
+      color: #92400E;
+      border-left-color: var(--warning);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .alert-grey {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border-left-color: var(--text-light);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--text-light);
+    }
+
+    .alert-green {
+      background: var(--success-bg);
+      color: #065F46;
+      border-left-color: var(--success);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* --- Timeline --- */
+    .timeline {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      padding: 1rem 0 1.5rem;
+    }
+
+    .timeline-item {
+      min-width: 130px;
+      text-align: center;
+      position: relative;
+    }
+
+    .timeline-marker {
+      width: 14px;
+      height: 14px;
+      background: var(--info);
+      border-radius: 50%;
+      margin: 0 auto 0.75rem;
+      border: 3px solid #FFF;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      right: -50%;
+      height: 2px;
+      background: var(--info-bg);
+      z-index: 1;
+    }
+
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+
+    /* --- Skeletons & Empty States --- */
+    .skeleton {
+      background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+
+    .skeleton-text {
+      height: 1.25rem;
+      width: 60%;
+      margin-bottom: 0.5rem;
+    }
+
+    .skeleton-value {
+      height: 2.25rem;
+      width: 40%;
+      margin-top: 1rem;
+    }
+
+    .skeleton-card {
+      height: 150px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      color: var(--text-light);
+      text-align: center;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 2px dashed var(--border);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1.25rem;
+      filter: grayscale(100%) opacity(0.5);
+    }
+
+    .empty-state h3 {
+      color: var(--text-main);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    /* --- Controls --- */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #FFF;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .btn-secondary:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #FFF;
+      box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-success:hover {
+      background: #059669;
+      box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .input-control {
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s;
+      background: #FFFFFF;
+      color: var(--text-main);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .input-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* --- Multi-date picker custom style --- */
+    .date-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    .date-badge button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .date-badge button:hover {
+      color: var(--danger);
+    }
+
+    /* --- Mobile Responsive --- */
+    .backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.5);
+      z-index: 998;
+      display: none;
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-main);
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        z-index: 999;
+        height: 100vh;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .sidebar.open {
+        left: 0;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+      }
+
+      .backdrop.open {
+        display: block;
+      }
+
+      .main-content {
+        width: 100vw;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<!-- ================== BODY ================== -->
+
+<body>
+
+  <!-- Login View -->
+  <div id="view-login">
+    <div class="login-box">
+      <div class="login-box-logo">🧠</div>
+      <h2>PD-SENSE</h2>
+      <p>Clinical Intelligence Platform</p>
+      <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+        <input type="email" id="login-email" placeholder="Physician Email" required autocomplete="email">
+        <input type="password" id="login-pass" placeholder="Password" required autocomplete="current-password">
+        <div class="checkbox-group">
+          <input type="checkbox" id="login-remember">
+          <label for="login-remember">Keep me securely logged in</label>
+        </div>
+        <button type="submit" id="login-btn">Secure Login</button>
+        <button type="button" onclick="bypassLoginForDemo()"
+          style="margin-top:1rem; background: transparent; color: var(--accent); border: 1px solid var(--accent-light); box-shadow: none;">Preview
+          Demo Environment</button>
+      </form>
+      <div id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="view-app" class="hidden">
+    <!-- Dark Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">🧠</div>
+        <h2>PD-SENSE</h2>
+      </div>
+      <nav>
+        <a href="#patients" id="nav-patients">
+          <span style="font-size:1.2rem;">📋</span> Patient List
+        </a>
+        <a href="#emergencies" id="nav-emergencies">
+          <span style="font-size:1.2rem;">🚨</span> Emergency Log
+        </a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div id="doctor-email"></div>
+        <button onclick="handleLogout()">Sign Out Securely</button>
+      </div>
+    </div>
+
+    <div class="backdrop"
+      onclick="document.querySelector('.sidebar').classList.remove('open'); document.querySelector('.backdrop').classList.remove('open');">
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="hamburger"
+            onclick="document.querySelector('.sidebar').classList.add('open'); document.querySelector('.backdrop').classList.add('open');">&#9776;</button>
+          <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+        </div>
+        <div class="connection-status" id="conn-container">
+          <div id="conn-dot" class="dot offline"></div>
+          <span id="conn-text">Connecting...</span>
+        </div>
+      </div>
+
+      <!-- Patient List -->
+      <div id="page-patients" class="page-container">
+        <div class="controls-row" style="justify-content: flex-end;">
+          <div style="font-size:0.85rem;color:var(--text-muted);font-weight:500;">🟢 Live telemetry active</div>
+        </div>
+        <div id="patients-loading" class="grid">
+          <div class="card skeleton skeleton-card"></div>
+          <div class="card skeleton skeleton-card"></div>
+        </div>
+        <div id="patients-empty" class="empty-state hidden">
+          <div class="empty-state-icon">📭</div>
+          <h3>No Patient Records</h3>
+          <p>The clinical database is currently empty.</p>
+        </div>
+        <div class="grid" id="patients-grid"></div>
+      </div>
+
+      <!-- Single Day Dashboard -->
+      <div id="page-dashboard" class="page-container">
+        <div class="controls-row" style="justify-content:space-between;">
+          <button class="btn btn-secondary" onclick="location.hash='#patients'">&larr; Back to List</button>
+          <div style="display:flex;gap:0.75rem;align-items:center;">
+            <input type="date" id="dash-date" class="input-control" onchange="loadDashboardDate()">
+            <button class="btn btn-primary" onclick="goToMultiDay()">Compare Trends</button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem;">
+          <div class="card">
+            <div class="card-title">Avg Tremor</div>
+            <div class="card-value" id="val-avg-tremor">-</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Max Tremor</div>
+            <div class="card-value" id="val-max-tremor">-</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Tremor Freq</div>
+            <div class="card-value" id="val-freq">- <span
+                style="font-size:1.1rem;font-weight:500;color:var(--text-light);">Hz</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">BK Grade</div>
+            <div class="card-value" id="val-bk-grade">-</div>
+            <div class="card-subtext" id="val-bk-label"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Freezes Today</div>
+            <div class="card-value" id="val-freezes">-</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Cadence</div>
+            <div class="card-value" id="val-cadence">- <span
+                style="font-size:1.1rem;font-weight:500;color:var(--text-light);">Hz</span></div>
+            <div class="card-subtext" id="val-gait-status"></div>
+          </div>
+        </div>
+
+        <div id="tremor-type-panel" class="alert-panel alert-grey">
+          <span style="font-size:1.5rem;">⚙️</span>
+          <div>Waiting for AI sensor classification...</div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Tremor Profile & FOG (Real-time)</h3>
+            <div style="display:flex;gap:1rem;font-size:0.85rem;color:var(--text-muted);font-weight:500;">
+              <span style="display:flex;align-items:center;gap:6px;"><span
+                  style="display:inline-block;width:12px;height:12px;background:var(--danger-bg);border:1px solid var(--danger);"></span>
+                FOG Episode</span>
+              <span style="display:flex;align-items:center;gap:6px;"><span
+                  style="display:inline-block;width:16px;height:2px;background:var(--accent);border-top:2px dotted var(--accent);"></span>
+                Medication Dose</span>
+            </div>
+          </div>
+          <div id="tremor-chart-empty" class="empty-state hidden" style="height:320px;padding:2rem;">
+            <p>Awaiting sensor synchronization.</p>
+          </div>
+          <div class="chart-wrapper" id="tremor-chart-wrap"><canvas id="tremorChart"></canvas></div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Environmental Telemetry</h3>
+          </div>
+          <div id="env-chart-empty" class="empty-state hidden" style="height:320px;padding:2rem;">
+            <p>Awaiting environmental data.</p>
+          </div>
+          <div class="chart-wrapper" id="env-chart-wrap"><canvas id="envChart"></canvas></div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
+          <div class="card">
+            <div class="card-title">Temperature</div>
+            <div class="card-value" id="val-temp">- <span
+                style="font-size:1.1rem;font-weight:500;color:var(--text-light);">°C</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Humidity</div>
+            <div class="card-value" id="val-humidity">- <span
+                style="font-size:1.1rem;font-weight:500;color:var(--text-light);">%</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Pressure</div>
+            <div class="card-value" id="val-pressure">- <span
+                style="font-size:1.1rem;font-weight:500;color:var(--text-light);">hPa</span></div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Medication Timeline</h3>
+            <div class="badge bg-grey" id="val-time-since-dose">No doses today</div>
+          </div>
+          <div class="timeline" id="med-timeline">
+            <div style="color:var(--text-muted);font-size:0.9rem;width:100%;text-align:center;">No medication events
+              recorded in EHR for this date.</div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div style="padding:1.5rem 1.5rem 0;">
+            <h3>Alert Log (Today)</h3>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Alert Type</th>
+                <th>Tremor Score</th>
+                <th>State</th>
+              </tr>
+            </thead>
+            <tbody id="dash-alerts-tbody">
+              <tr>
+                <td colspan="4" style="text-align:center;color:var(--text-light);padding:2rem;">No anomalous alerts
+                  recorded.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Multi-Day Comparison -->
+      <div id="page-multi-day" class="page-container">
+        <div class="controls-row">
+          <button class="btn btn-secondary" onclick="location.hash=`#dashboard/${currentPatientId}`">&larr;
+            Back</button>
+          <div style="width:1px;height:24px;background:var(--border);margin:0 0.5rem;"></div>
+          <input type="date" id="multi-date-input" class="input-control">
+          <button class="btn btn-primary" onclick="addMultiDate()">Add to Analysis</button>
+          <button class="btn btn-success" onclick="exportCSV()" style="margin-left:auto;">📥 Export CSV</button>
+        </div>
+
+        <div style="margin-bottom:1.5rem;min-height:36px;" id="selected-dates-container"></div>
+
+        <div id="multi-trend-panel" class="alert-panel alert-grey hidden" style="justify-content:space-between;">
+          <div><strong>AI Trend Analysis (Latest vs Selected Average)</strong></div>
+          <div id="multi-trend-content" style="font-weight:700;"></div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>Tremor Comparison Overlay</h3>
+          </div>
+          <div class="chart-wrapper"><canvas id="multiChart"></canvas></div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Avg Tremor</th>
+                <th>Max Tremor</th>
+                <th>Freezes</th>
+                <th>Longest FOG (s)</th>
+                <th>BK Grade</th>
+                <th>Doses</th>
+                <th>Max eCO2</th>
+              </tr>
+            </thead>
+            <tbody id="multi-tbody">
+              <tr>
+                <td colspan="8" style="text-align:center;color:var(--text-light);padding:2rem;">Select dates to initiate
+                  multi-day analysis.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Emergency Log -->
+      <div id="page-emergencies" class="page-container">
+        <div class="controls-row" style="justify-content:space-between;">
+          <h2 style="margin:0;">System-wide Emergency Log</h2>
+          <select id="em-filter" class="input-control" onchange="renderEmergencies()">
+            <option value="ALL">All Alerts</option>
+            <option value="CRITICAL_TREMOR">Critical Tremor</option>
+            <option value="NO_MOVEMENT">No Movement</option>
+            <option value="REPEATED_FREEZE">Repeated Freeze</option>
+            <option value="LONG_FREEZE">Long Freeze</option>
+            <option value="MISSED_DOSE">Missed Dose</option>
+          </select>
+        </div>
+        <div id="em-loading" class="grid">
+          <div class="skeleton skeleton-text" style="width:100%;height:48px;"></div>
+          <div class="skeleton skeleton-text" style="width:100%;height:48px;"></div>
+        </div>
+        <div id="em-empty" class="empty-state hidden">
+          <div class="empty-state-icon">🛡️</div>
+          <h3>System Clear</h3>
+          <p>No emergency events match your current filter criteria.</p>
+        </div>
+        <div class="table-container" id="em-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Patient ID</th>
+                <th>Alert Type</th>
+                <th>Tremor</th>
+                <th>Freeze</th>
+              </tr>
+            </thead>
+            <tbody id="em-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================== FIREBASE ================== -->
+  <script type="module">
+    // @ts-ignore
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    // @ts-ignore
+    import { getDatabase, ref, onChildAdded, onValue, get, child, query, orderByChild } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    // @ts-ignore
+    import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // REPLACE THIS WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      window.db = getDatabase(app);
+      window.auth = getAuth(app);
+      window.fb = { onChildAdded, onValue, get, ref, child, query, orderByChild };
+      window.authMethods = { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, signOut };
+
+      // Start auth listener
+      onAuthStateChanged(window.auth, user => {
+        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: user }));
+      });
+    } catch (err) {
+      console.error("Firebase Init Error:", err);
+      document.getElementById('login-error').innerText = "Firebase initialization failed. Check configuration.";
+    }
+  </script>
+
+  <!-- ================== APP LOGIC ================== -->
+  <script>
+    // Global State
+    let activeUnsubscribers = [];
+    let connUnsub = null;
+    let currentPatientId = null;
+    let currentDate = new Date().toLocaleDateString('en-CA');
+    let charts = {};
+    let selectedMultiDates = [];
+    let multiDayPatientId = null;
+    let lastDoseTime = 0;
+    let doseTimerInterval = null;
+    let connectionStatusInited = false;
+    let dashInitTimer = null;
+
+    // Dashboard Aggregation State
+    let dailyTremorSum = 0;
+    let dailyTremorCount = 0;
+    let dailyMaxTremor = 0;
+    let dailyFogCount = 0;
+    let lastFogState = false;
+
+    // DOM Utilities
+    const $ = id => document.getElementById(id);
+    const show = id => { const el = $(id); if (el) el.classList.remove('hidden'); };
+    const hide = id => { const el = $(id); if (el) el.classList.add('hidden'); };
+
+    function getBadgeClass(level) {
+      switch (level) {
+        case 'NONE': return 'bg-grey';
+        case 'LOW': return 'bg-green';
+        case 'MED': return 'bg-amber';
+        case 'HIGH': return 'bg-orange';
+        case 'CRITICAL': return 'bg-red';
+        default: return 'bg-grey';
+      }
+    }
+
+    function formatTime(ts) {
+      return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return '';
+      return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[tag] || tag));
+    }
+
+    function showError(msg) { console.error(msg); }
+
+    // Authentication
+    window.addEventListener('authStateChanged', (e) => {
+      const user = e.detail;
+      if (user) {
+        hide('view-login');
+        show('view-app');
+        $('doctor-email').innerText = user.email;
+        initConnectionStatus();
+        if (!location.hash) location.hash = '#patients';
+        router();
+      } else {
+        show('view-login');
+        hide('view-app');
+        clearListeners();
+        if (connUnsub) { connUnsub(); connUnsub = null; connectionStatusInited = false; }
+        if (doseTimerInterval) clearInterval(doseTimerInterval);
+      }
+    });
+
+    window.handleLogin = async () => {
+      const email = $('login-email').value;
+      const pass = $('login-pass').value;
+      const remember = $('login-remember').checked;
+      const btn = $('login-btn');
+      const errDiv = $('login-error');
+
+      btn.disabled = true;
+      btn.innerText = 'Authenticating...';
+      errDiv.innerText = '';
+
+      try {
+        const persistenceType = remember ? window.authMethods.browserLocalPersistence : window.authMethods.browserSessionPersistence;
+        await window.authMethods.setPersistence(window.auth, persistenceType);
+        await window.authMethods.signInWithEmailAndPassword(window.auth, email, pass);
+      } catch (e) {
+        let msg = "Sign in failed.";
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = "Invalid email or password.";
+        else if (e.code === 'auth/too-many-requests') msg = "Too many attempts. Please try again later.";
+        errDiv.innerText = msg;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Secure Login';
+      }
+    };
+
+    window.handleLogout = () => { window.authMethods.signOut(window.auth); location.hash = ''; };
+
+    function addListener(unsubFunc) { activeUnsubscribers.push(unsubFunc); }
+    function clearListeners() { activeUnsubscribers.forEach(unsub => { if (typeof unsub === 'function') unsub(); }); activeUnsubscribers = []; }
+
+    // Demo Mode Bypass
+    window.bypassLoginForDemo = () => {
+      document.getElementById('login-error').innerText = '';
+      window.db = "mockdb";
+      window.auth = { currentUser: { email: 'dr.demo@neurology.org' } };
+      window.fb = {
+        ref: (db, path) => path,
+        onChildAdded: () => { return () => { }; },
+        onValue: (path, cb) => {
+          if (path === '.info/connected') { cb({ val: () => true }); }
+          else { cb({ exists: () => false, hasChildren: () => false, forEach: () => { }, val: () => null }); }
+          return () => { };
+        },
+        get: async () => ({ exists: () => false, val: () => null })
+      };
+      window.authMethods = { signOut: () => { location.reload(); } };
+      window.dispatchEvent(new CustomEvent('authStateChanged', { detail: window.auth.currentUser }));
+    };
+
+    // Connection Status
+    function initConnectionStatus() {
+      if (connectionStatusInited) return;
+      const connectedRef = window.fb.ref(window.db, ".info/connected");
+      connUnsub = window.fb.onValue(connectedRef, (snap) => {
+        const isConnected = snap.val();
+        $('conn-dot').className = `dot ${isConnected ? 'live' : 'offline'}`;
+        $('conn-text').innerText = isConnected ? 'Connected (Secure)' : 'Offline';
+      });
+      connectionStatusInited = true;
+    }
+
+    // Routing
+    window.addEventListener("hashchange", router);
+
+    function router() {
+      if (!window.auth || !window.auth.currentUser) return;
+      const hash = location.hash.replace("#", "") || "patients";
+      const [page, param] = hash.split("/");
+
+      clearListeners();
+      if (doseTimerInterval) clearInterval(doseTimerInterval);
+      document.querySelector('.sidebar').classList.remove('open');
+      document.querySelector('.backdrop').classList.remove('open');
+
+      document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar nav a').forEach(el => el.classList.remove('active'));
+
+      if (page === 'patients') {
+        $('page-patients').classList.add('active');
+        $('nav-patients').classList.add('active');
+        $('topbar-title').innerText = 'Patient Roster';
+        loadPatients();
+      } else if (page === 'dashboard') {
+        currentPatientId = param || currentPatientId;
+        if (!currentPatientId) { location.hash = '#patients'; return; }
+        $('nav-patients').classList.add('active');
+        $('page-dashboard').classList.add('active');
+        $('topbar-title').innerText = `Telemetry: ${currentPatientId}`;
+        $('dash-date').value = currentDate;
+        initCharts();
+        loadDashboard(currentPatientId, currentDate);
+      } else if (page === 'multi-day') {
+        currentPatientId = param || currentPatientId;
+        if (!currentPatientId) { location.hash = '#patients'; return; }
+        if (multiDayPatientId !== currentPatientId) { selectedMultiDates = []; multiDayPatientId = currentPatientId; }
+        $('nav-patients').classList.add('active');
+        $('page-multi-day').classList.add('active');
+        $('topbar-title').innerText = `Analysis: ${currentPatientId}`;
+        initMultiChart();
+        renderMultiDates();
+        executeMultiDayComparison().catch(err => console.error('Comparison failed:', err));
+      } else if (page === 'emergencies') {
+        $('page-emergencies').classList.add('active');
+        $('nav-emergencies').classList.add('active');
+        $('topbar-title').innerText = 'Global Alerts';
+        loadAllEmergencies();
+      }
+    }
+
+    // === PAGE: PATIENT LIST ===
+    function loadPatients() {
+      show('patients-loading'); hide('patients-empty'); $('patients-grid').innerHTML = '';
+      const r = window.fb.ref(window.db, 'patients');
+      const unsub = window.fb.onValue(r, snap => {
+        hide('patients-loading'); $('patients-grid').innerHTML = '';
+        if (!snap.exists() || !snap.hasChildren()) { show('patients-empty'); return; }
+
+        snap.forEach(childSnap => {
+          const pId = childSnap.key;
+          const pData = childSnap.val();
+          let maxTremor = 0, bk = 0, alert = 'NONE', freezeCount = 0, lastUpdateTs = 0;
+
+          if (pData.data && pData.data[currentDate]) {
+            const readings = Object.values(pData.data[currentDate]).sort((a, b) => a.ts - b.ts);
+            if (readings.length > 0) {
+              let lastFog = false;
+              let maxTremorLvl = 0;
+              const levelMap = { 'NONE': 0, 'LOW': 1, 'MED': 2, 'HIGH': 3, 'CRITICAL': 4 };
+              const revMap = { 0: 'NONE', 1: 'LOW', 2: 'MED', 3: 'HIGH', 4: 'CRITICAL' };
+
+              readings.forEach(r => {
+                if (r.tremor_max > maxTremor) maxTremor = r.tremor_max;
+                if (r.fog_active && !lastFog) freezeCount++;
+                lastFog = !!r.fog_active;
+                const lvl = levelMap[r.tremor_level || 'NONE'] || 0;
+                if (lvl > maxTremorLvl) maxTremorLvl = lvl;
+              });
+
+              alert = revMap[maxTremorLvl];
+              const latest = readings[readings.length - 1];
+              bk = latest.bk_grade || 0;
+              lastUpdateTs = latest.ts;
+            }
+          }
+
+          const card = document.createElement('div');
+          card.className = 'card clickable';
+          card.onclick = () => location.hash = `#dashboard/${pId}`;
+          card.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">${escapeHTML(pId)}</div>
+          <div class="badge ${getBadgeClass(alert)}">${alert === 'NONE' ? 'STABLE' : alert.replaceAll('_', ' ')}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;">
+          <div>
+            <div class="card-subtext" style="margin:0;">Max Tremor</div>
+            <div class="card-value">${maxTremor.toFixed(1)}</div>
+          </div>
+          <div style="text-align:right;">
+             <div class="card-subtext" style="margin:0;">Freezes</div>
+             <div style="font-size:1.75rem;font-weight:700;color:var(--text-main);line-height:1;margin-top:0.25rem;">${freezeCount}</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:1rem;font-size:0.85rem;color:var(--text-muted);">
+          <span>BK Grade: <strong style="color:var(--text-main);">${bk}</strong></span>
+          <span>${lastUpdateTs ? formatTime(lastUpdateTs) : 'No data'}</span>
+        </div>
+      `;
+          $('patients-grid').appendChild(card);
+        });
+      }, (err) => { hide('patients-loading'); showError("Failed: " + err.message); });
+      addListener(unsub);
+    }
+
+    // === PAGE: SINGLE DAY DASHBOARD ===
+    window.loadDashboardDate = () => { currentDate = $('dash-date').value; clearListeners(); initCharts(); loadDashboard(currentPatientId, currentDate); };
+    window.goToMultiDay = () => { location.hash = `#multi-day/${currentPatientId}`; };
+
+    function loadDashboard(pId, date) {
+      if (dashInitTimer) { clearTimeout(dashInitTimer); dashInitTimer = null; }
+      $('dash-alerts-tbody').innerHTML = ''; $('med-timeline').innerHTML = ''; lastDoseTime = 0;
+      dailyTremorSum = 0; dailyTremorCount = 0; dailyMaxTremor = 0; dailyFogCount = 0; lastFogState = false;
+      let chartDataQueue = []; let isInitialLoad = true;
+
+      const commitInitialData = () => {
+        isInitialLoad = false; dashInitTimer = null;
+        if (chartDataQueue.length === 0) {
+          show('tremor-chart-empty'); hide('tremor-chart-wrap'); show('env-chart-empty'); hide('env-chart-wrap');
+        } else {
+          hide('tremor-chart-empty'); show('tremor-chart-wrap'); hide('env-chart-empty'); show('env-chart-wrap');
+          chartDataQueue.forEach(v => {
+            dailyTremorSum += (v.tremor_avg || 0); dailyTremorCount++;
+            if (v.tremor_max > dailyMaxTremor) dailyMaxTremor = v.tremor_max;
+            if (v.fog_active && !lastFogState) dailyFogCount++;
+            lastFogState = !!v.fog_active;
+          });
+          updateDashboardCards(chartDataQueue[chartDataQueue.length - 1]);
+          chartDataQueue.slice(-60).forEach(pt => appendToCharts(pt));
+          charts.tremor.update(); charts.env.update();
+        }
+      };
+
+      dashInitTimer = setTimeout(commitInitialData, 800);
+
+      const dataRef = window.fb.ref(window.db, `patients/${pId}/data/${date}`);
+      const unsubData = window.fb.onChildAdded(dataRef, snap => {
+        const data = snap.val();
+        if (isInitialLoad) {
+          clearTimeout(dashInitTimer); chartDataQueue.push(data); dashInitTimer = setTimeout(commitInitialData, 200);
+        } else { processDashboardDataPoint(data); }
+      });
+      addListener(unsubData);
+
+      let hasAlerts = false;
+      const alertRef = window.fb.ref(window.db, `emergencies/${pId}`);
+      const unsubAlerts = window.fb.onChildAdded(alertRef, snap => {
+        const alert = snap.val();
+        if (new Date(alert.ts).toISOString().split('T')[0] === date) {
+          if (!hasAlerts) { $('dash-alerts-tbody').innerHTML = ''; hasAlerts = true; }
+          const typeStr = alert.type || 'UNKNOWN';
+          const tr = document.createElement('tr');
+          tr.className = typeStr.includes('CRITICAL') ? 'critical' : (typeStr.includes('NO_MOVEMENT') || typeStr.includes('MISSED_DOSE') ? 'warning' : '');
+          tr.innerHTML = `<td>${formatTime(alert.ts)}</td><td><strong>${escapeHTML(typeStr).replaceAll('_', ' ')}</strong></td><td>${alert.tremor != null ? alert.tremor.toFixed(1) : '-'}</td><td>${alert.fog ? 'Active' : '-'}</td>`;
+          $('dash-alerts-tbody').prepend(tr);
+        }
+      });
+      addListener(unsubAlerts);
+
+      let hasMeds = false;
+      const medRef = window.fb.ref(window.db, `patients/${pId}/medication_events`);
+      const unsubMeds = window.fb.onChildAdded(medRef, snap => {
+        const med = snap.val();
+        if (new Date(med.timestamp).toISOString().split('T')[0] === date) {
+          if (!hasMeds) { $('med-timeline').innerHTML = ''; hasMeds = true; }
+          if (med.timestamp > lastDoseTime) lastDoseTime = med.timestamp;
+
+          const item = document.createElement('div');
+          item.className = 'timeline-item';
+          item.innerHTML = `
+        <div class="timeline-line"></div><div class="timeline-marker"></div>
+        <div style="font-size:0.9rem;font-weight:600;color:var(--text-main);">${formatTime(med.timestamp)}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">Score: ${med.tremor_at_dose?.toFixed(1) || '-'}</div>
+      `;
+          $('med-timeline').appendChild(item);
+
+          if (charts.tremor && charts.tremor.options.plugins.annotation) {
+            const timeLabel = formatTime(med.timestamp);
+            let closestLabel = timeLabel; let drawLine = false;
+            const labels = charts.tremor.data.labels;
+            if (labels.length > 0) {
+              const targetMs = new Date('1970/01/01 ' + timeLabel).getTime();
+              let minDiff = Infinity;
+              labels.forEach(lbl => {
+                const diff = Math.abs(new Date('1970/01/01 ' + lbl).getTime() - targetMs);
+                if (diff < minDiff) { minDiff = diff; closestLabel = lbl; }
+              });
+              if (minDiff <= 300000) drawLine = true;
+            }
+            if (drawLine || labels.length === 0) {
+              charts.tremor.options.plugins.annotation.annotations['med_' + med.timestamp] = {
+                type: 'line', scaleID: 'x', value: closestLabel, borderColor: '#2563EB', borderWidth: 2, borderDash: [4, 4],
+                label: { content: 'Dose Taken', display: true, position: 'start', backgroundColor: '#2563EB', font: { size: 11, family: 'Inter' } }
+              };
+              charts.tremor.update('none');
+            }
+          }
+        }
+      });
+      addListener(unsubMeds); startDoseTimer();
+    }
+
+    function startDoseTimer() {
+      if (doseTimerInterval) clearInterval(doseTimerInterval);
+      const updateTimer = () => {
+        if (lastDoseTime === 0) return;
+        $('val-time-since-dose').className = 'badge bg-purple';
+        $('val-time-since-dose').innerText = `${Math.floor((Date.now() - lastDoseTime) / 60000)} min since last dose`;
+      };
+      updateTimer(); doseTimerInterval = setInterval(updateTimer, 60000);
+    }
+
+    function processDashboardDataPoint(data) {
+      hide('tremor-chart-empty'); show('tremor-chart-wrap'); hide('env-chart-empty'); show('env-chart-wrap');
+      dailyTremorSum += (data.tremor_avg || 0); dailyTremorCount++;
+      if (data.tremor_max > dailyMaxTremor) dailyMaxTremor = data.tremor_max;
+      if (data.fog_active && !lastFogState) dailyFogCount++;
+      lastFogState = !!data.fog_active;
+      updateDashboardCards(data); appendToCharts(data);
+      charts.tremor.update('none'); charts.env.update('none');
+    }
+
+    function updateDashboardCards(data) {
+      $('val-avg-tremor').innerText = dailyTremorCount > 0 ? (dailyTremorSum / dailyTremorCount).toFixed(1) : '0.0';
+      $('val-max-tremor').innerText = dailyMaxTremor.toFixed(1);
+      $('val-freezes').innerText = dailyFogCount;
+      $('val-freq').innerHTML = data.tremor_freq_hz != null ? `${data.tremor_freq_hz.toFixed(1)} <span style="font-size:1.1rem;font-weight:500;color:var(--text-light);">Hz</span>` : '-';
+      $('val-bk-grade').innerText = data.bk_grade != null ? data.bk_grade : '-';
+      $('val-bk-label').innerText = data.bk_label || '';
+      $('val-cadence').innerHTML = data.cadence_hz != null ? `${data.cadence_hz.toFixed(2)} <span style="font-size:1.1rem;font-weight:500;color:var(--text-light);">Hz</span>` : '-';
+      $('val-temp').innerHTML = data.temp_c != null ? `${data.temp_c} <span style="font-size:1.1rem;font-weight:500;color:var(--text-light);">°C</span>` : '-';
+      $('val-pressure').innerHTML = data.pressure_hpa != null ? `${data.pressure_hpa} <span style="font-size:1.1rem;font-weight:500;color:var(--text-light);">hPa</span>` : '-';
+
+      $('val-gait-status').innerHTML = data.pd_shuffle ? '<span class="badge bg-red">SHUFFLING</span>' : '<span class="badge bg-green">NORMAL</span>';
+
+      const panel = $('tremor-type-panel');
+      if (data.tremor_type === 'PD') {
+        panel.className = 'alert-panel alert-purple';
+        panel.innerHTML = '<span style="font-size:1.5rem;">🧠</span> <div><strong>AI Insight: Parkinson\'s Tremor Profile</strong><br><span style="font-size:0.85rem;">3–6 Hz resting tremor consistent with PD detected.</span></div>';
+      } else if (data.tremor_type === 'ESSENTIAL') {
+        panel.className = 'alert-panel alert-amber';
+        panel.innerHTML = '<span style="font-size:1.5rem;">⚠️</span> <div><strong>AI Insight: Essential Tremor Profile</strong><br><span style="font-size:0.85rem;">6–12 Hz kinetic pattern detected.</span></div>';
+      } else {
+        panel.className = 'alert-panel alert-green';
+        panel.innerHTML = '<span style="font-size:1.5rem;">✅</span> <div><strong>AI Insight: Stable</strong><br><span style="font-size:0.85rem;">No significant tremor patterns currently detected.</span></div>';
+      }
+    }
+
+    let fogZones = [];
+    function appendToCharts(data) {
+      const timeLabel = formatTime(data.ts);
+      if (charts.tremor && data.tremor_avg !== undefined) {
+        charts.tremor.data.labels.push(timeLabel); charts.tremor.data.datasets[0].data.push(data.tremor_avg);
+        if (data.fog_active) {
+          if (fogZones.length === 0 || fogZones[fogZones.length - 1].end) fogZones.push({ start: timeLabel, end: null });
+        } else if (fogZones.length > 0 && !fogZones[fogZones.length - 1].end) {
+          fogZones[fogZones.length - 1].end = timeLabel;
+        }
+        if (charts.tremor.options.plugins.annotation) {
+          fogZones.forEach((zone, idx) => {
+            const zId = 'fog_' + idx;
+            if (!charts.tremor.options.plugins.annotation.annotations[zId]) {
+              charts.tremor.options.plugins.annotation.annotations[zId] = { type: 'box', xMin: zone.start, xMax: zone.end || timeLabel, backgroundColor: 'rgba(239, 68, 68, 0.1)', borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)', drawTime: 'beforeDatasetsDraw' };
+            } else { charts.tremor.options.plugins.annotation.annotations[zId].xMax = zone.end || timeLabel; }
+          });
+        }
+        if (charts.tremor.data.labels.length > 60) { charts.tremor.data.labels.shift(); charts.tremor.data.datasets[0].data.shift(); }
+      }
+
+      if (charts.env && data.eco2_ppm !== undefined) {
+        charts.env.data.labels.push(timeLabel); charts.env.data.datasets[0].data.push(data.eco2_ppm); charts.env.data.datasets[1].data.push(data.tvoc_ppb);
+        if (charts.env.data.labels.length > 60) { charts.env.data.labels.shift(); charts.env.data.datasets[0].data.shift(); charts.env.data.datasets[1].data.shift(); }
+      }
+    }
+
+    // Chart Enterprise UI Formatting
+    window.Chart.defaults.font.family = "'Inter', sans-serif";
+    window.Chart.defaults.color = '#64748B';
+    window.Chart.defaults.font.size = 12;
+
+    function initCharts() {
+      if (charts.tremor) charts.tremor.destroy(); if (charts.env) charts.env.destroy(); fogZones = [];
+
+      charts.tremor = new Chart($('tremorChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Avg Tremor', data: [], borderColor: '#2563EB', backgroundColor: 'rgba(37, 99, 235, 0.05)', fill: true, tension: 0.3, pointRadius: 0, pointHitRadius: 10, borderWidth: 2 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 0 },
+          scales: { y: { min: 0, max: 10, border: { display: false }, grid: { color: '#E2E8F0', drawBorder: false } }, x: { border: { display: false }, grid: { display: false } } },
+          plugins: {
+            legend: { display: false },
+            annotation: {
+              annotations: {
+                line1: { type: 'line', yMin: 6, yMax: 6, borderColor: '#F59E0B', borderDash: [4, 4], borderWidth: 1.5, label: { content: 'Warning Threshold', display: true, position: 'start', backgroundColor: '#F59E0B', color: '#FFF', font: { size: 11, family: 'Inter' } } },
+                line2: { type: 'line', yMin: 9.5, yMax: 9.5, borderColor: '#EF4444', borderDash: [4, 4], borderWidth: 1.5, label: { content: 'Critical Threshold', display: true, position: 'start', backgroundColor: '#EF4444', color: '#FFF', font: { size: 11, family: 'Inter' } } }
+              }
+            }
+          }
+        }
+      });
+
+      charts.env = new Chart($('envChart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            { label: 'eCO2', data: [], borderColor: '#F59E0B', backgroundColor: 'transparent', fill: false, yAxisID: 'y', tension: 0.3, pointRadius: 0, borderWidth: 2 },
+            { label: 'TVOC', data: [], borderColor: '#10B981', backgroundColor: 'transparent', fill: false, yAxisID: 'y1', tension: 0.3, pointRadius: 0, borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, interaction: { mode: 'index', intersect: false },
+          scales: { y: { type: 'linear', display: true, position: 'left', border: { display: false }, grid: { color: '#E2E8F0' } }, y1: { type: 'linear', display: true, position: 'right', border: { display: false }, grid: { drawOnChartArea: false } }, x: { border: { display: false }, grid: { display: false } } }
+        }
+      });
+    }
+
+    // === PAGE: MULTI-DAY COMPARISON ===
+    function initMultiChart() {
+      if (charts.multi) charts.multi.destroy();
+      charts.multi = new Chart($('multiChart').getContext('2d'), {
+        type: 'line', data: { labels: [], datasets: [] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 10, border: { display: false }, grid: { color: '#E2E8F0' } }, x: { type: 'category', ticks: { autoSkip: true, maxTicksLimit: 20 }, border: { display: false }, grid: { display: false } } }, interaction: { mode: 'nearest', axis: 'x', intersect: false } }
+      });
+    }
+
+    window.addMultiDate = () => {
+      const d = $('multi-date-input').value; if (!d || selectedMultiDates.includes(d)) return;
+      if (selectedMultiDates.length >= 7) { alert("Maximum 7 dates allowed."); return; }
+      selectedMultiDates.push(d); selectedMultiDates.sort(); renderMultiDates();
+      executeMultiDayComparison().catch(err => console.error('Comparison failed:', err));
+    };
+
+    window.removeMultiDate = (d) => { selectedMultiDates = selectedMultiDates.filter(x => x !== d); renderMultiDates(); executeMultiDayComparison(); };
+
+    function renderMultiDates() {
+      const container = $('selected-dates-container'); container.innerHTML = '';
+      selectedMultiDates.forEach(d => { container.innerHTML += `<div class="date-badge">${d} <button onclick="removeMultiDate('${d}')">&times;</button></div>`; });
+    }
+
+    async function executeMultiDayComparison() {
+      $('multi-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;">Fetching clinical records...</td></tr>';
+      charts.multi.data.datasets = []; hide('multi-trend-panel');
+
+      if (selectedMultiDates.length === 0) {
+        $('multi-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:2rem;">Select dates to initiate multi-day analysis.</td></tr>';
+        charts.multi.data.labels = []; charts.multi.update(); return;
+      }
+
+      const colors = ['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#F43F5E'];
+      let cIdx = 0; let allStats = []; $('multi-tbody').innerHTML = '';
+      let allMeds = [];
+      try {
+        const snapMeds = await window.fb.get(window.fb.ref(window.db, `patients/${currentPatientId}/medication_events`));
+        allMeds = snapMeds.exists() ? Object.values(snapMeds.val()) : [];
+      } catch (err) { console.warn("Meds not loaded:", err); }
+
+      for (const d of selectedMultiDates) {
+        try {
+          const snapData = await window.fb.get(window.fb.ref(window.db, `patients/${currentPatientId}/data/${d}`));
+          const medCount = allMeds.filter(m => m.timestamp && new Date(m.timestamp).toISOString().split('T')[0] === d).length;
+
+          if (snapData.exists()) {
+            const vals = Object.values(snapData.val()).sort((a, b) => a.ts - b.ts);
+            if (vals.length === 0) continue;
+
+            let sumTr = 0, maxTr = 0, fogCount = 0, maxBk = 0, maxEco2 = 0, longestFzMs = 0;
+            let lastFog = false; let trData = [];
+
+            vals.forEach(v => {
+              sumTr += v.tremor_avg || 0;
+              if (v.tremor_max > maxTr) maxTr = v.tremor_max;
+              if (v.fog_active && !lastFog) fogCount++; lastFog = !!v.fog_active;
+              if (v.bk_grade > maxBk) maxBk = v.bk_grade;
+              if (v.eco2_ppm > maxEco2) maxEco2 = v.eco2_ppm;
+              if (v.fog_duration_ms > longestFzMs) longestFzMs = v.fog_duration_ms;
+              trData.push({ x: formatTime(v.ts), y: v.tremor_avg });
+            });
+
+            const avgTr = sumTr / vals.length;
+            allStats.push({ date: d, avgTr, maxTr, fogCount, maxBk, longestFzSec: longestFzMs / 1000, medCount, maxEco2 });
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><strong>${d}</strong></td><td>${avgTr.toFixed(2)}</td><td>${maxTr.toFixed(2)}</td><td>${fogCount}</td><td>${(longestFzMs / 1000).toFixed(1)}s</td><td>${maxBk}</td><td>${medCount}</td><td>${maxEco2} ppm</td>`;
+            $('multi-tbody').appendChild(tr);
+
+            charts.multi.data.datasets.push({ label: d, _tempData: trData, borderColor: colors[cIdx++ % colors.length], backgroundColor: 'transparent', tension: 0.3, pointRadius: 0, borderWidth: 2, spanGaps: true });
+          } else {
+            const tr = document.createElement('tr'); tr.innerHTML = `<td><strong>${d}</strong></td><td colspan="7" style="color:var(--text-light)">No records found</td>`; $('multi-tbody').appendChild(tr);
+          }
+        } catch (err) { console.error(err); }
+      }
+
+      let allLabels = new Set();
+      charts.multi.data.datasets.forEach(ds => ds._tempData.forEach(pt => allLabels.add(pt.x)));
+      charts.multi.data.labels = Array.from(allLabels).sort();
+      charts.multi.data.datasets.forEach(ds => {
+        const dataMap = {}; ds._tempData.forEach(pt => dataMap[pt.x] = pt.y);
+        ds.data = charts.multi.data.labels.map(lbl => dataMap[lbl] !== undefined ? dataMap[lbl] : null); delete ds._tempData;
+      });
+      charts.multi.update();
+
+      if (allStats.length > 1) {
+        show('multi-trend-panel');
+        const diff = allStats[allStats.length - 1].avgTr - (allStats.slice(0, -1).reduce((acc, s) => acc + s.avgTr, 0) / (allStats.length - 1));
+        const tp = $('multi-trend-panel');
+        if (diff < -0.5) { tp.className = 'alert-panel alert-green'; $('multi-trend-content').innerHTML = `Positive Trajectory (Trend: ${diff.toFixed(2)})`; }
+        else if (diff > 0.5) { tp.className = 'alert-panel alert-amber'; $('multi-trend-content').innerHTML = `Negative Trajectory (Trend: +${diff.toFixed(2)})`; }
+        else { tp.className = 'alert-panel alert-grey'; $('multi-trend-content').innerHTML = `Stable Baseline`; }
+      }
+    }
+
+    window.exportCSV = () => {
+      let csv = "Date,Avg Tremor,Max Tremor,Freezes,Longest FOG (s),BK Grade,Doses,Max eCO2\n";
+      const rows = $('multi-tbody').querySelectorAll('tr');
+      if (rows.length === 0 || rows[0].innerText.includes('Select dates')) return;
+      rows.forEach(tr => {
+        if (tr.children.length > 2) {
+          const cols = Array.from(tr.querySelectorAll('td')).map((td, i) => {
+            let val = td.innerText.trim();
+            if (i === 4) val = val.replace(/s$/, ''); if (i === 7) val = val.replace(/ ppm$/, ''); return val;
+          });
+          csv += cols.join(",") + "\n";
+        }
+      });
+      const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.setAttribute('href', url); a.setAttribute('download', `PD_SENSE_Comparison_${currentPatientId}.csv`);
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+    };
+
+    // === PAGE: EMERGENCY LOG ===
+    let allEmData = [];
+    function loadAllEmergencies() {
+      allEmData = []; $('em-tbody').innerHTML = ''; hide('em-table-container'); show('em-loading'); hide('em-empty');
+      const unsub = window.fb.onValue(window.fb.ref(window.db, `emergencies`), snap => {
+        hide('em-loading'); allEmData = [];
+        if (!snap.exists()) { show('em-empty'); hide('em-table-container'); return; }
+        snap.forEach(pSnap => { pSnap.forEach(emSnap => { const em = emSnap.val(); em.patientId = pSnap.key; allEmData.push(em); }); });
+        allEmData.sort((a, b) => b.ts - a.ts); renderEmergencies();
+      });
+      addListener(unsub);
+    }
+
+    window.renderEmergencies = () => {
+      const filter = $('em-filter').value; $('em-tbody').innerHTML = '';
+      const filtered = allEmData.filter(em => filter === 'ALL' || em.type === filter);
+      if (filtered.length === 0) { show('em-empty'); hide('em-table-container'); return; }
+      hide('em-empty'); show('em-table-container');
+      filtered.forEach(em => {
+        const typeStr = em.type || 'UNKNOWN';
+        const tr = document.createElement('tr');
+        tr.className = typeStr.includes('CRITICAL') ? 'critical' : (typeStr.includes('NO_MOVEMENT') || typeStr.includes('MISSED_DOSE') ? 'warning' : '');
+        tr.innerHTML = `<td>${new Date(em.ts).toLocaleDateString()} <span style="color:var(--text-light);font-size:0.85rem;margin-left:0.5rem;">${formatTime(em.ts)}</span></td><td><strong>${escapeHTML(em.patientId)}</strong></td><td>${escapeHTML(typeStr).replaceAll('_', ' ')}</td><td>${em.tremor != null ? em.tremor.toFixed(1) : '-'}</td><td>${em.fog ? 'Active' : '-'}</td>`;
+        $('em-tbody').appendChild(tr);
+      });
+    };
+  </script>
+</body>
+
+</html>
